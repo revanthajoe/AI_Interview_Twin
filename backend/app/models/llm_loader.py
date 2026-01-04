@@ -6,7 +6,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from app.utils.device import detect_device
 from app.config import HF_TOKEN
 
-TCS_MODEL_NAME = "meta-llama/Llama-3.2-3B-Instruct"
+# Using Microsoft Phi-2 as it is freely accessible without gated access
+TCS_MODEL_NAME = "microsoft/phi-2"
 
 _tokenizer = None
 _model = None
@@ -18,9 +19,10 @@ def load_tcs_model():
     if _model is not None:
         return _tokenizer, _model
 
-    hf_token = os.getenv("HF_TOKEN")
+    # Try to get HF_TOKEN from environment, then from config
+    hf_token = os.getenv("HF_TOKEN", HF_TOKEN)
     if not hf_token:
-        raise RuntimeError("HF_TOKEN environment variable not set")
+        raise RuntimeError("HF_TOKEN not configured in config.py or environment")
 
     device = detect_device()
 
